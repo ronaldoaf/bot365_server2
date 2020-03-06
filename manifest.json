@@ -1,0 +1,16 @@
+{
+   "description": "Atualiza as Stats 288sb",
+   "manifest_version":2,
+   "name": "Bot365 Server",
+   "permissions": [ "webNavigation","tabs","https://www.288sb.com/*","http://bot-ao.com/*"],
+   "version": "0.1.0",
+   "background": {
+    "scripts": ["jquery-2.1.4.min.js","background.js"]
+  },
+   "content_scripts": [
+    {
+      "matches": ["https://www.288sb.com/*" ],
+      "js": ["jquery-2.1.4.min.js","content.js"]
+    }
+  ]
+}
