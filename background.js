@@ -17,10 +17,14 @@ const checkTabs=()=>{
       //Se a aba do Inplay não estiver aberta, abre-a
       if (!inList(tabs.map(tab=>tab.url), '#/IP/B1') ) chrome.tabs.create({url:'https://www.365sport365.com/?nr=1#/IP/B1'});
       
+      if (!inList(tabs.map(tab=>tab.url), '/today') ) chrome.tabs.create({url:'https://www.totalcorner.com/match/today'});
+      
       //Se exisitir mais de 1 aba de Inplay, fecha as outros deixando apenas a última
       const tabs_IP=tabs.filter(tab=>tab.url.includes('#/IP/') ).reverse().slice(1);
       for (let tab of tabs_IP) chrome.tabs.remove(tab.id);
       
+      const tabs_TC=tabs.filter(tab=>tab.url.includes('/today') ).reverse().slice(1);
+      for (let tab of tabs_TC) chrome.tabs.remove(tab.id);
       
       for (let tab of tabs) {
        

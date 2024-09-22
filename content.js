@@ -181,6 +181,7 @@ const getMatchList0=()=>[...$$('.ovm-Fixture')].map((e,i)=>({
 
 
 const getStat=async()=>{
+   if ( !location.hash.includes('#/IP') )  return;
    
    const items=['dangerousattacks', 'shotsontarget', 'shotsofftarget', 'corners'];
    
@@ -273,6 +274,8 @@ const getStat=async()=>{
 
 
 const getStat0=async()=>{
+   if ( !location.hash.includes('#/IP') )  return;
+   
    
    const recent_stats=(await fetch("https://bot-ao.com/recent_stats0.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
   
@@ -329,6 +332,7 @@ const getStat0=async()=>{
 
 
 const preReq=async()=>{
+   if ( !location.hash.includes('#/IP') )  return;
    
    //Se não estiver na tela do Soccer, força para entrar nessa tela
    if(location.hash!="#/IP/B1") {
@@ -355,19 +359,70 @@ const preReq=async()=>{
 };
 
 
+const getStatsTC=async()=>{
+      if ( !location.hash.includes('today') )  return;
+   
+      let stats3=[...$$('tr[data-match_id]')].filter(e=>e.querySelector('.match_status_minutes').innerText!='').map(e=>{
+      const id=Number(e.getAttribute('data-match_id'));
+      const m=Number(e.querySelector('.match_status_minutes').innerText.trim());
+     
+      const home=e.querySelector('.match_home a').innerText;
+      const away=e.querySelector('.match_away a').innerText;
+      const ah=Number(e.querySelector('.match_handicap').innerText.split('(')[1].split(')')[0]);
+      
+      const goal_div=e.querySelector('.match_total_goal_div').innerText;
+      
+      const gl=goal_div.includes('(') ? Number( e.querySelector('.match_total_goal_div').innerText.split('(')[1].slice(0,-1) ): Number( e.querySelector('.match_total_goal_div').innerText );
+    
+      const ts=Math.floor( (+new Date)/1000 );
+      const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
+     
+      return {home,away,ah,gl,ts,dt,m};
+   }).filter(e=>e.m>1 &&  e.m<30 );
 
+   console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)));
+
+   await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)) );
+   
+   
+}
 
 
 
 
 
 const main=async()=>{
+  
+   
    await getStat0();
    
    await getStat();
    
    
+   
 }
+
+
+
+(async()=>{
+   
+   
+   while(true) try{
+      
+      if ( !location.hash.includes('today') )  continue;
+      
+      console.log('Loop TC');
+      await sleep(10*1000);
+      
+      await getStatsTC();
+      
+   }
+   catch(e){ console.log(e) }
+   
+   
+})();
+
+
 
 
 
@@ -386,7 +441,7 @@ const main=async()=>{
       await sleep(30*1000)
       
       //Se não estiver na tela o Inplay  não faz nada
-      if ( !location.hash.includes('#/IP') )  continue;
+       if ( !location.hash.includes('#/IP') )  continue;
       
      
       

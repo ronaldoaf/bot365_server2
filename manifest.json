@@ -9,16 +9,17 @@
       "http://localhost:1313/*",
       "https://bot-ao.com/*",
       "https://www.bet365.com/*",
-      "https://www.365sport365.com/*"
+      "https://www.365sport365.com/*",
+      "https://www.totalcorner.com/*"
     ],
-   "version": "0.1.0",
+   "version": "0.2.0",
    "background": {
     "scripts": ["shared.js","background.js"]
   },
    "content_scripts": [
     {
       "matches": [
-         "https://www.bet365.com/*","https://www.365sport365.com/*"
+         "https://www.bet365.com/*","https://www.365sport365.com/*", "https://www.totalcorner.com/*"
       ],
       "js": ["shared.js","content.js"]
     }
