@@ -409,10 +409,12 @@ const main=async()=>{
    
    while(true) try{
       
+      await sleep(10*1000);
+      console.log('Loop TC');
+      
       if ( !location.hash.includes('today') )  continue;
       
-      console.log('Loop TC');
-      await sleep(10*1000);
+
       
       await getStatsTC();
       
