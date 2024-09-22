@@ -409,10 +409,11 @@ const main=async()=>{
    
    while(true) try{
       
-      await sleep(10*1000);
+      await sleep(30*1000);
       console.log('Loop TC');
       
       if ( !location.href.includes('today') )  continue;
+      
       
    
       
@@ -425,7 +426,11 @@ const main=async()=>{
 })();
 
 
-
+setInterval(()=>{
+   if ( !location.href.includes('today') ) return;
+   location.reload();
+   
+},2*60*1000);
 
 
 
