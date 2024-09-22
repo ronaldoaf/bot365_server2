@@ -360,7 +360,7 @@ const preReq=async()=>{
 
 
 const getStatsTC=async()=>{
-      if ( !location.hash.includes('today') )  return;
+ 
    
       let stats3=[...$$('tr[data-match_id]')].filter(e=>e.querySelector('.match_status_minutes').innerText!='').map(e=>{
       const id=Number(e.getAttribute('data-match_id'));
@@ -412,9 +412,9 @@ const main=async()=>{
       await sleep(10*1000);
       console.log('Loop TC');
       
-      if ( !location.hash.includes('today') )  continue;
+      if ( !location.href.includes('today') )  continue;
       
-
+   
       
       await getStatsTC();
       
