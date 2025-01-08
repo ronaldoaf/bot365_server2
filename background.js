@@ -15,7 +15,7 @@ const checkTabs=()=>{
    chrome.tabs.query({},(tabs)=> {
       
       //Se a aba do Inplay não estiver aberta, abre-a
-      if (!inList(tabs.map(tab=>tab.url), '#/IP/B1') ) chrome.tabs.create({url:'https://www.365sport365.com/?nr=1#/IP/B1'});
+      if (!inList(tabs.map(tab=>tab.url), '#/IP/B1') ) chrome.tabs.create({url:'https://www.bet365.bet.br/?nr=1#/IP/B1'});
       
       if (!inList(tabs.map(tab=>tab.url), '/today') ) chrome.tabs.create({url:'https://www.totalcorner.com/match/today'});
       
