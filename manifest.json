@@ -11,7 +11,7 @@
       "https://www.bet365.bet.br/*",
       "https://www.totalcorner.com/*"
     ],
-   "version": "0.3.0",
+   "version": "0.4.0",
    "background": {
     "scripts": ["shared.js","background.js"]
   },

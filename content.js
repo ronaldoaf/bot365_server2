@@ -19,6 +19,16 @@ Element.prototype.$ =function(q) { return this.querySelector(q)  };
 Element.prototype.$$=function(q) { return this.querySelectorAll(q) };
 
 
+// Função para dividir um array em partes menores de tamanho 'size'
+ const chunkArray = (arr, size) => {
+     const result = [];
+     for (let i = 0; i < arr.length; i += size) {
+         result.push(arr.slice(i, i + size));
+     }
+     return result;
+ };
+
+
 //Funcão genérica envia os eventos do contentScript o backgroundScript
 const sendEvent=async(ev, input)=>{
    
@@ -258,9 +268,23 @@ const getStat=async()=>{
    //await insertStats({stats: JSON.stringify (stats2)});
    
    
-   await fetch('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
+   // Dividir stats2 em partes de 10 elementos
+    const chunks = chunkArray(stats2, 10);
+   
+   
+    // Enviar cada parte separadamente
+    for (const chunk of chunks) {
+        const url = 'https://bot-ao.com/insert_stats.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        await fetch(url);
+        console.log(url);
+        await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
+    }
+   
+   
+   
+   //await fetch('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
-   console.log('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
+   //console.log('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
 }
 
@@ -324,9 +348,23 @@ const getStat0=async()=>{
    //await insertStats({stats: JSON.stringify (stats2)});
    
    
-   await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
+    // Dividir stats2 em partes de 10 elementos
+    const chunks = chunkArray(stats2, 10);
+   
+   
+    // Enviar cada parte separadamente
+    for (const chunk of chunks) {
+        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        await fetch(url);
+        console.log(url);
+        await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
+    }
+   
+   
+   
+   //await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
-   console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
+   //console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
 }
 
