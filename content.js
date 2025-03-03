@@ -274,7 +274,7 @@ const getStat=async()=>{
    
     // Enviar cada parte separadamente
     for (const chunk of chunks) {
-        const url = 'https://bot-ao.com/insert_stats.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
         await fetch(url);
         console.log(url);
         await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
@@ -418,9 +418,23 @@ const getStatsTC=async()=>{
       return {home,away,ah,gl,ts,dt,m};
    }).filter(e=>e.m>1 &&  e.m<30 );
 
-   console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)));
+   // Dividir stats2 em partes de 10 elementos
+    const chunks = chunkArray(stats3, 10);
+   
+   
+    // Enviar cada parte separadamente
+    for (const chunk of chunks) {
+        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        await fetch(url);
+        console.log(url);
+        await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
+    }
+   
 
-   await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)) );
+
+   //console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)));
+
+   //await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)) );
    
    
 }
