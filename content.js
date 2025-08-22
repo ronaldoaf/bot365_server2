@@ -199,8 +199,8 @@ const getStat=async()=>{
    
    const recent_stats=(await fetch("https://bot-ao.com/recent_stats.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
    
-   //const matches=(getMatchList()).filter(m=>!recent_stats.includes(m.home+m.away));
-   const matches=(getMatchList());
+   const matches=(getMatchList()).filter(m=>!recent_stats.includes(m.home+m.away));
+   //const matches=(getMatchList());
    
    
   console.log(matches);
