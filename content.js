@@ -8,7 +8,7 @@ const sum=(arr)=>arr.length>0?arr.reduce((a,b)=>a+b):0;
 const avg=(arr)=>arr.length>0?sum(arr)/arr.length: 0;
 
 //Converte o handicap do formato 2.5,3.0  para 2.75, por exemplo
-const calcHand=(hand_str)=>avg(hand_str.split(',').map(e=>Number(e) ));
+const calcHand=(hand_str)=>avg(hand_str.replace(/[\+UO ]/,'').split(',').map(e=>Number(e) ));
 
 //Shorthands $ e $$
 const $=(q)=>document.querySelector(q);
@@ -170,6 +170,7 @@ const getMatchList=()=>[...$$('.ovm-Fixture')].map((e,i)=>({
       rh:e.$$('.ovm-FixtureDetailsTwoWay_Team')[0].querySelectorAll('.ovm-FixtureDetailsTwoWay_RedCard').length,
       ra:e.$$('.ovm-FixtureDetailsTwoWay_Team')[1].querySelectorAll('.ovm-FixtureDetailsTwoWay_RedCard').length,
    })).filter(e=>e.timer=='45:00');
+   //}));
      // .filter(e=>!jaFoiListado(e.home,e.away));
    
 
@@ -181,7 +182,7 @@ const getMatchList0=()=>[...$$('.ovm-Fixture')].map((e,i)=>({
       away:e.$$('.ovm-FixtureDetailsTwoWay_TeamName')[1].innerText,
       rh:e.$$('.ovm-FixtureDetailsTwoWay_Team')[0].querySelectorAll('.ovm-FixtureDetailsTwoWay_RedCard').length,
       ra:e.$$('.ovm-FixtureDetailsTwoWay_Team')[1].querySelectorAll('.ovm-FixtureDetailsTwoWay_RedCard').length,
-   })).filter(e=>e.timer.split(':')[0]='00')
+   })).filter(e=>e.timer.split(':')[0]=='00')
       .filter(e=>!e.home.includes('Esports') );
 
    
@@ -191,16 +192,18 @@ const getMatchList0=()=>[...$$('.ovm-Fixture')].map((e,i)=>({
 
 
 const getStat=async()=>{
-   if ( !location.hash.includes('#/IP') )  return;
+ if ( !location.hash.includes('#/IP') )  return;
    
    const items=['dangerousattacks', 'shotsontarget', 'shotsofftarget', 'corners'];
    
    
    const recent_stats=(await fetch("https://bot-ao.com/recent_stats.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
    
-   const matches=(getMatchList()).filter(m=>!recent_stats.includes(m.home+m.away));
+   //const matches=(getMatchList()).filter(m=>!recent_stats.includes(m.home+m.away));
+   const matches=(getMatchList());
    
-   console.log(matches);
+   
+  console.log(matches);
    
    //Se não tiver nenhum jogo seja necessario colectar as estatisticas  sai fazer nada 
    if (!matches.length) return;
@@ -209,36 +212,40 @@ const getStat=async()=>{
    const fixtures=[...$$('.ovm-Fixture')];
    
    const stats=[];
-   
+   	
+   //Para cada categoria de estatistica: da, so, sf, c
    for(let item of items){
       await $('.osm-SentenceLink').rclick();
       
       await $(`.osm-StatDropdownRow-${item}`).rclick();
       
       
-      
+ 
       stats.push( matches.map(m=>[...fixtures[m.pos].$$('.osm-StatsColumn_Stat') ].map(e=>Number(e.innerText)  )) );
 
    }
+   //gols: gh, ga
    stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-StandardScoresSoccer_ScoreCol div div') ].map(e=>Number(e.innerText)  )) );
    
    
-   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
+   //await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
    
-   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[2].rclick();
-   await sleep(2000);
+   //await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
+   //await sleep(2000);
    stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
    
    
-   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
+   //await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
    
-   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
+   //await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
    
    
-   
+   console.log(stats);
   
    const ts=Math.floor( (+new Date)/1000 );
    const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
+   
+   
    
    
    //'.ovm-StandardScoresSoccer_TeamOne 
@@ -256,13 +263,13 @@ const getStat=async()=>{
       ca:stats[3][i][1],
       gh:stats[4][i][0],
       ga:stats[4][i][1],
-      ah:stats[5][i][0],
+      ah:stats[5][i].length==4 ? stats[5][i][0] : null,
       rh:m.rh,
       ra:m.ra,
       ts,
       dt,
       
-   }));
+   })).filter(s=>s.ah!=null);
    console.log(stats2);
    //console.log(JSON.stringify (stats2));
    //await insertStats({stats: JSON.stringify (stats2)});
@@ -274,7 +281,7 @@ const getStat=async()=>{
    
     // Enviar cada parte separadamente
     for (const chunk of chunks) {
-        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        const url = 'https://bot-ao.com/insert_stats.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
         await fetch(url);
         console.log(url);
         await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
@@ -285,6 +292,9 @@ const getStat=async()=>{
    //await fetch('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
    //console.log('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
+   
+   
+  
 
 }
 
@@ -298,7 +308,7 @@ const getStat=async()=>{
 
 
 const getStat0=async()=>{
-   if ( !location.hash.includes('#/IP') )  return;
+ if ( !location.hash.includes('#/IP') )  return;
    
    
    const recent_stats=(await fetch("https://bot-ao.com/recent_stats0.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
@@ -315,7 +325,7 @@ const getStat0=async()=>{
    
    const stats=[];
   
-   
+   /*
    await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
    await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[2].rclick();
    await sleep(2000);
@@ -326,8 +336,8 @@ const getStat0=async()=>{
    await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
    await sleep(2000);
    stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
-   
-   
+   */
+   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
   
    const ts=Math.floor( (+new Date)/1000 );
    const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
@@ -339,7 +349,7 @@ const getStat0=async()=>{
       home:m.home,
       away:m.away,
       ah:stats[0][i][0],
-      gl:stats[1][i][0],
+      gl:stats[0][i][2],
       ts,
       dt,
    }));
@@ -380,6 +390,11 @@ const preReq=async()=>{
    
    //Se não estiver aparecendo o menu das estatisticas clica para abrir
    if(![...$('.ovm-StatsModeButton').classList].includes('ovm-StatsModeButton-enabled') ) await $('.ovm-StatsModeButton').click(); 
+   
+   if ($('.ovm-ClassificationMarketSwitcherDropdownButton_Text').innerText!='Asian Lines') {
+	   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
+	   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();  
+   }	
    
    
    //Aceita os cookies
