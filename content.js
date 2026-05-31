@@ -107,7 +107,7 @@ const waitFor=async(el, timeout=20*sec)=>{
 
 
 const adjustBrower=()=>{
-   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-10};
+   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-9};
    if ( window.navigator.userAgent.includes('Firefox') ) return {aX:1, aY:-5};
    return {aX:0, aY:0};
 }
