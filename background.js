@@ -17,15 +17,12 @@ const checkTabs=()=>{
       //Se a aba do Inplay não estiver aberta, abre-a
       if (!inList(tabs.map(tab=>tab.url), '#/IP/B1') ) chrome.tabs.create({url:'https://www.bet365.bet.br/?nr=1#/IP/B1'});
       
-      if (!inList(tabs.map(tab=>tab.url), '/today') ) chrome.tabs.create({url:'https://www.totalcorner.com/match/today'});
       
       //Se exisitir mais de 1 aba de Inplay, fecha as outros deixando apenas a última
       const tabs_IP=tabs.filter(tab=>tab.url.includes('#/IP/') ).reverse().slice(1);
       for (let tab of tabs_IP) chrome.tabs.remove(tab.id);
       
-      const tabs_TC=tabs.filter(tab=>tab.url.includes('/today') ).reverse().slice(1);
-      for (let tab of tabs_TC) chrome.tabs.remove(tab.id);
-      
+	  
       for (let tab of tabs) {
        
          //Deixa sempre ativa aba do Inplay
@@ -89,7 +86,7 @@ chrome.runtime.onMessage.addListener(async(msg,sender)=>{
    
    if (msg.command =='stats') await action(async()=>{
          const {stats}=msg.data;
-         let res=await fetch(`https://bot-ao.com/insert_stats.php?stats=${stats}`).then(r=>r.json());
+         let res=await fetch(`https://aposte.me/bot/insert_stats.php?stats=${stats}`).then(r=>r.json());
          console.log(res);
    });
 

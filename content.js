@@ -19,6 +19,23 @@ Element.prototype.$ =function(q) { return this.querySelector(q)  };
 Element.prototype.$$=function(q) { return this.querySelectorAll(q) };
 
 
+
+
+NodeList.prototype.fText = function(texto) {
+    // 'this' refere-se ao próprio NodeList
+    return [...this].filter(node => 
+        node.innerText && node.innerText.includes(texto)
+    );
+};
+
+Element.prototype.hasClass =function(classe) { 
+	return this.getAttribute('class').split(' ').includes(classe);
+};
+
+
+
+
+
 // Função para dividir um array em partes menores de tamanho 'size'
  const chunkArray = (arr, size) => {
      const result = [];
@@ -90,7 +107,7 @@ const waitFor=async(el, timeout=20*sec)=>{
 
 
 const adjustBrower=()=>{
-   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-11};
+   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-10};
    if ( window.navigator.userAgent.includes('Firefox') ) return {aX:1, aY:-5};
    return {aX:0, aY:0};
 }
@@ -197,7 +214,7 @@ const getStat=async()=>{
    const items=['dangerousattacks', 'shotsontarget', 'shotsofftarget', 'corners'];
    
    
-   const recent_stats=(await fetch("https://bot-ao.com/recent_stats.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
+   const recent_stats=(await fetch("https://aposte.me/bot/recent_stats.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
    
    const matches=(getMatchList()).filter(m=>!recent_stats.includes(m.home+m.away));
    //const matches=(getMatchList());
@@ -225,22 +242,22 @@ const getStat=async()=>{
 
    }
    //gols: gh, ga
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-StandardScoresSoccer_ScoreCol div div') ].map(e=>Number(e.innerText)  )) );
+   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ScorePill') ].map(e=>Number(e.innerText)  )) );
    
    
-   //await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
+ 
    
-   //await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
+   //handicap  e goalline
    //await sleep(2000);
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
+   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantHandicap_Handicap') ].slice(1,3).map(e=>calcHand(e.innerText)  )) );
    
    
-   //await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
-   
-   //await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
+  
    
    
    console.log(stats);
+   
+ 
   
    const ts=Math.floor( (+new Date)/1000 );
    const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
@@ -263,7 +280,7 @@ const getStat=async()=>{
       ca:stats[3][i][1],
       gh:stats[4][i][0],
       ga:stats[4][i][1],
-      ah:stats[5][i].length==4 ? stats[5][i][0] : null,
+      ah:stats[5][i].length==2 ? stats[5][i][0] : null,
       rh:m.rh,
       ra:m.ra,
       ts,
@@ -279,20 +296,16 @@ const getStat=async()=>{
     const chunks = chunkArray(stats2, 10);
    
    
+   
     // Enviar cada parte separadamente
     for (const chunk of chunks) {
-        const url = 'https://bot-ao.com/insert_stats.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        const url = 'https://aposte.me/bot/insert_stats.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
         await fetch(url);
         console.log(url);
         await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
     }
    
-   
-   
-   //await fetch('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
-
-   //console.log('https://bot-ao.com/insert_stats.php?stats='+encodeURI(JSON.stringify(stats2)) );
-   
+  
    
   
 
@@ -311,7 +324,7 @@ const getStat0=async()=>{
  if ( !location.hash.includes('#/IP') )  return;
    
    
-   const recent_stats=(await fetch("https://bot-ao.com/recent_stats0.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
+   const recent_stats=(await fetch("https://aposte.me/bot/recent_stats0.php").then(r=>r.json() ) ).map(e=>e.home+e.away);
   
    const matches=(getMatchList0()).filter(m=>!recent_stats.includes(m.home+m.away));
    
@@ -325,19 +338,8 @@ const getStat0=async()=>{
    
    const stats=[];
   
-   /*
-   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
-   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[2].rclick();
-   await sleep(2000);
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
-   
-   
-   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
-   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();
-   await sleep(2000);
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
-   */
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantStackedCentered_Handicap') ].map(e=>calcHand(e.innerText)  )) );
+
+   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantHandicap_Handicap') ].map(e=>calcHand(e.innerText)  )) );
   
    const ts=Math.floor( (+new Date)/1000 );
    const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
@@ -364,7 +366,7 @@ const getStat0=async()=>{
    
     // Enviar cada parte separadamente
     for (const chunk of chunks) {
-        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
+        const url = 'https://aposte.me/bot/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
         await fetch(url);
         console.log(url);
         await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
@@ -372,30 +374,18 @@ const getStat0=async()=>{
    
    
    
-   //await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
-   //console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats2)) );
 
 }
 
 
 const preReq=async()=>{
-   if ( !location.hash.includes('#/IP') )  return;
-   
+	
    //Se não estiver na tela do Soccer, força para entrar nessa tela
    if(location.hash!="#/IP/B1") {
       location.hash="#/IP/B1"; 
       await sleep(5*sec);
    }
-   
-   //Se não estiver aparecendo o menu das estatisticas clica para abrir
-   if(![...$('.ovm-StatsModeButton').classList].includes('ovm-StatsModeButton-enabled') ) await $('.ovm-StatsModeButton').click(); 
-   
-   if ($('.ovm-ClassificationMarketSwitcherDropdownButton_Text').innerText!='Asian Lines') {
-	   await $('.ovm-ClassificationMarketSwitcherDropdownButton_Text').rclick();
-	   await $$('.ovm-ClassificationMarketSwitcherDropdownItem')[3].rclick();  
-   }	
-   
    
    //Aceita os cookies
    const cookie_accept=$('.ccm-CookieConsentPopup_Accept');
@@ -406,53 +396,24 @@ const preReq=async()=>{
    const free_bet_close_button=$('.pm-FreeBetsPushGraphicCloseButton');
    if( free_bet_close_button ) await free_bet_close_button.rclick();
    
+   //Ao aparecer as informações sobre o último login, clica para continuar
+   const last_login_button=[...$$('[class*="llr"]')].filter(e=>e.innerText=='Continue')[0];
+   if( last_login_button ) await last_login_button.rclick();
    
+   
+   
+   //Se não estiver aparecendo o menu das estatisticas clica para abrir
+   if(![...$('.ovm-StatsModeButton').classList].includes('ovm-StatsModeButton-enabled') ) await $('.ovm-StatsModeButton').click(); 
+   
+   
+   
+   //Deixa no mercado Asian Lines
+   const asian_lines_tab=$$('.ovm-ClassificationMarketSwitcherMenu_Item').fText('Asian Lines')[0];
+   if (!asian_lines_tab.hasClass('ovm-ClassificationMarketSwitcherMenu_Item-active') ) await asian_lines_tab.rclick();
 
    
 };
 
-
-const getStatsTC=async()=>{
- 
-   
-      let stats3=[...$$('tr[data-match_id]')].filter(e=>e.querySelector('.match_status_minutes').innerText!='').map(e=>{
-      const id=Number(e.getAttribute('data-match_id'));
-      const m=Number(e.querySelector('.match_status_minutes').innerText.trim());
-     
-      const home=e.querySelector('.match_home a').innerText;
-      const away=e.querySelector('.match_away a').innerText;
-      const ah=Number(e.querySelector('.match_handicap').innerText.split('(')[1].split(')')[0]);
-      
-      const goal_div=e.querySelector('.match_total_goal_div').innerText;
-      
-      const gl=goal_div.includes('(') ? Number( e.querySelector('.match_total_goal_div').innerText.split('(')[1].slice(0,-1) ): Number( e.querySelector('.match_total_goal_div').innerText );
-    
-      const ts=Math.floor( (+new Date)/1000 );
-      const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
-     
-      return {home,away,ah,gl,ts,dt,m};
-   }).filter(e=>e.m>1 &&  e.m<30 );
-
-   // Dividir stats2 em partes de 10 elementos
-    const chunks = chunkArray(stats3, 10);
-   
-   
-    // Enviar cada parte separadamente
-    for (const chunk of chunks) {
-        const url = 'https://bot-ao.com/insert_stats0.php?stats=' + encodeURIComponent(JSON.stringify(chunk));
-        await fetch(url);
-        console.log(url);
-        await sleep(1000); // Pequeno delay entre requisições para evitar sobrecarga
-    }
-   
-
-
-   //console.log('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)));
-
-   //await fetch('https://bot-ao.com/insert_stats0.php?stats='+encodeURI(JSON.stringify(stats3)) );
-   
-   
-}
 
 
 
@@ -461,9 +422,9 @@ const getStatsTC=async()=>{
 const main=async()=>{
   
    
-   await getStat0();
+    await getStat0();
    
-   await getStat();
+    await getStat();
    
    
    
@@ -471,41 +432,12 @@ const main=async()=>{
 
 
 
-(async()=>{
-   
-   
-   while(true) try{
-      
-      await sleep(30*1000);
-      console.log('Loop TC');
-      
-      if ( !location.href.includes('today') )  continue;
-      
-      
-   
-      
-      await getStatsTC();
-      
-   }
-   catch(e){ console.log(e) }
-   
-   
-})();
-
-
-setInterval(()=>{
-   if ( !location.href.includes('today') ) return;
-   location.reload();
-   
-},2*60*1000);
-
-
 
 
 
 (async()=>{
    
-
+	
    
    
    //Loop a cada 10 segundos
@@ -514,10 +446,7 @@ setInterval(()=>{
       
       await sleep(30*1000)
       
-      //Se não estiver na tela o Inplay  não faz nada
-       if ( !location.hash.includes('#/IP') )  continue;
-      
-     
+    
       
       console.log('Loop Principal');
    
