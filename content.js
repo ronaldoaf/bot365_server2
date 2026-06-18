@@ -107,7 +107,7 @@ const waitFor=async(el, timeout=20*sec)=>{
 
 
 const adjustBrower=()=>{
-   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-9};
+   if ( window.navigator.userAgent.includes('Chrome') ) return {aX:0, aY:-8};
    if ( window.navigator.userAgent.includes('Firefox') ) return {aX:1, aY:-5};
    return {aX:0, aY:0};
 }
@@ -280,13 +280,15 @@ const getStat=async()=>{
       ca:stats[3][i][1],
       gh:stats[4][i][0],
       ga:stats[4][i][1],
-      ah:stats[5][i].length==2 ? stats[5][i][0] : null,
+      gl:calcHand(fixtures[m.pos].$('.ovm-ParticipantHandicap_Handicap').innerText),
+      oo:Number(fixtures[m.pos].$$('.ovm-ParticipantHandicap_Odds')[0].innerText),
+	  ou:Number(fixtures[m.pos].$$('.ovm-ParticipantHandicap_Odds')[1].innerText),
       rh:m.rh,
       ra:m.ra,
       ts,
       dt,
       
-   })).filter(s=>s.ah!=null);
+   })).filter(s=>s.oo!=null);
    console.log(stats2);
    //console.log(JSON.stringify (stats2));
    //await insertStats({stats: JSON.stringify (stats2)});
@@ -336,25 +338,21 @@ const getStat0=async()=>{
    
    const fixtures=[...$$('.ovm-Fixture')];
    
-   const stats=[];
-  
-
-   stats.push( matches.map(m=>[...fixtures[m.pos].$$('.ovm-ParticipantHandicap_Handicap') ].map(e=>calcHand(e.innerText)  )) );
-  
    const ts=Math.floor( (+new Date)/1000 );
    const dt=Math.floor( ts/(60*60*24) ) * (60*60*24);
-   
+
    
    //'.ovm-StandardScoresSoccer_TeamOne 
    //'.ovm-StandardScoresSoccer_TeamTwo 
    const stats2=matches.map((m,i)=>({
       home:m.home,
       away:m.away,
-      ah:stats[0][i][0],
-      gl:stats[0][i][2],
+      gl:calcHand(fixtures[m.pos].$('.ovm-ParticipantHandicap_Handicap').innerText),
+      oo:Number(fixtures[m.pos].$$('.ovm-ParticipantHandicap_Odds')[0].innerText),
+	  ou:Number(fixtures[m.pos].$$('.ovm-ParticipantHandicap_Odds')[1].innerText),
       ts,
       dt,
-   }));
+   })).filter(s=>s.oo>0);
    console.log(stats2);
    //console.log(JSON.stringify (stats2));
    //await insertStats({stats: JSON.stringify (stats2)});
@@ -408,8 +406,8 @@ const preReq=async()=>{
    
    
    //Deixa no mercado Asian Lines
-   const asian_lines_tab=$$('.ovm-ClassificationMarketSwitcherMenu_Item').fText('Asian Lines')[0];
-   if (!asian_lines_tab.hasClass('ovm-ClassificationMarketSwitcherMenu_Item-active') ) await asian_lines_tab.rclick();
+   const match_goals_tab=$$('.ovm-ClassificationMarketSwitcherMenu_Item').fText('Match Goals')[0];
+   if (!match_goals_tab.hasClass('ovm-ClassificationMarketSwitcherMenu_Item-active') ) await match_goals_tab.rclick();
 
    
 };
